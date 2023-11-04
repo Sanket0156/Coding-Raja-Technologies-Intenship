@@ -1,0 +1,55 @@
+# Coding Raja Technologies Internship Task 2
+import datetime
+import os
+import csv
+
+def clear_screen():
+    os.system('cls' if os.name == 'nt' else 'clear')
+
+class BudgetTracker:
+    def __init__(self):
+        self.transactions = []
+        self.load_transactions()
+
+    def load_transactions(self):
+        if os.path.exists('transactions.csv'):
+            with open('transactions.csv', 'r') as f:
+                reader = csv.reader(f)
+                next(reader) # Skip header row
+                for row in reader:
+                    transaction_type, date, category, amount = row
+                    amount = float(amount)
+                    self.transactions.append({
+                        'transaction_type': transaction_type,
+                        'date': datetime.datetime.strptime(date, '%Y-%m-%d'),
+                        'category': category,
+                        'amount': amount
+                    })
+
+    def save_transactions(self):
+        with open('transactions.csv', 'w') as f:
+            writer = csv.writer(f)
+            writer.writerow(['transaction_type', 'date', 'category', 'amount'])
+            for transaction in self.transactions:
+                writer.writerow([
+                    transaction['transaction_type'],
+                    transaction['date'].strftime('%Y-%m-%d'),
+                    transaction['category'],
+                    transaction['amount']
+                ])
+
+    def add_transaction(self, transaction_type, date, category, amount):
+        self.transactions.append({
+            'transaction_type': transaction_type,
+            'date': date,
+            'category': category,
+            'amount': amount
+        })
+        self.save_transactions()
+
+    def display_transactions(self):
+        for transaction in self.transactions:
+            print(f"{transaction['date'].strftime('%Y-%m-%d')} {transaction['transaction_type']} in {transaction['category']} for {transaction['amount']}")
+
+    def get_balance(self):
+        income = sum(t['amount'] for t in self.
